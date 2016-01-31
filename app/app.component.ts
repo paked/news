@@ -1,46 +1,42 @@
 import {Component} from 'angular2/core';
+import {OnInit} from 'angular2/core';
 
-interface Article {
-  id: number;
-  title: string;
-  content: string;
-  author: string;
-}
+import {PreviewPipe} from './preview.pipe';
+import {Article} from './article';
+import {ArticleComponent} from './article.component';
+import {ArticlesService} from './articles.service';
 
 @Component({
-  selector: 'my-article',
+  selector: 'hs-article-list',
   template: `<h1>Articles</h1>
+  <h2>Preview</h2>
   <ul>
-    <li *ngFor="#article of articles">
-      <h2>{{article.title}}</h2>
-      <p>{{article.content}}</p>
-      <p>by {{article.author}}</p>
+    <li *ngFor="#article of articles" (click)="onSelect(article)">
+      <h3>{{article.title}}</h3>
+      <p>{{article.content | preview: 10}}</p>
     </li>
   </ul>
-    `
+  
+  <div *ngIf="selectedArticle">
+    <hs-article [article]="selectedArticle"></hs-article>
+  </div>
+    `,
+  pipes: [PreviewPipe],
+  directives: [ArticleComponent],
+  providers: [ArticlesService]
 })
 
-export class AppComponent {
-  public articles = ARTICLES;
-}
+export class AppComponent implements OnInit{
+  public articles: Article[];
+  public selectedArticle: Article;
 
-var ARTICLES: Article[] = [
-  {
-    id: 0,
-    title: 'Meerkat Caught Walking Alone',
-    content: 'Authorities have been shocked to find a lone Meerkat walking among the suburb of Harrison in Canberra. When asked what he was doing, "Zoo." was the only reply.',
-    author: 'Barty'
-  },
-  {
-    id: 1,
-    title: 'Is TS Viable Now That ES6 Exists?',
-    content: 'It is called TypeScript, not ClassScript for a reason.',
-    author: 'McFly'
-  },
-  {
-    id: 2,
-    title: 'Key'
-    content: 'They don\'t want you to succeed. They don\'t want you to win.',
-    author: 'K.'
+  constructor(private _articlesService: ArticlesService) {}
+
+  ngOnInit() {
+    this._articlesService.getArticles().then(articles => this.articles = articles);
   }
-];
+
+  onSelect(article: Article) {
+    this.selectedArticle = article;
+  }
+}
