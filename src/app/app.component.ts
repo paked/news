@@ -8,8 +8,7 @@ import {ArticlesService} from './articles.service';
 
 @Component({
   selector: 'hs-article-list',
-  template: `<h1>Articles</h1>
-  <h2>Preview</h2>
+  template: `
   <ul>
     <li *ngFor="#article of articles" (click)="onSelect(article)">
       <h3>{{article.title}}</h3>
